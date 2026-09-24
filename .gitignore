@@ -1,0 +1,13 @@
+# Godot
+.godot/
+*.import.bak
+/android/
+
+# Executáveis do Godot (não versionar binários)
+Godot_v4.7.2-stable_win64.exe
+
+# Companheiro visual do brainstorming
+.superpowers/
+
+# Capturas geradas por tools/screenshot.gd
+screenshots/

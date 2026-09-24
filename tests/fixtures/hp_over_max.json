@@ -1,0 +1,1 @@
+{"hero": {"id": "hero-001", "name": "Aldric", "class": "mage", "level": 1, "xp": 35, "current_hp": 9999, "attributes": {"strength": 5, "agility": 8, "intelligence": 14, "vitality": 12}}, "currencies": {"gold": 1250, "gems": 20}}

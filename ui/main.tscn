@@ -1,0 +1,67 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://ui/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://ui/city/city_screen.gd" id="2_city"]
+[ext_resource type="Script" path="res://ui/hud/toast.gd" id="3_toast"]
+[ext_resource type="Script" path="res://ui/hud/hero_hud.gd" id="4_hero_hud"]
+[ext_resource type="Script" path="res://ui/hud/currency_hud.gd" id="5_currency_hud"]
+[ext_resource type="Script" path="res://ui/hud/chat_box.gd" id="6_chat_box"]
+[ext_resource type="Script" path="res://ui/bottom_bar/bottom_bar.gd" id="7_bottom_bar"]
+[ext_resource type="Script" path="res://ui/character_panel/character_panel.gd" id="8_character_panel"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_main")
+
+[node name="CityScreen" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_city")
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+layer = 1
+
+[node name="HUD" type="Control" parent="HUDLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="HeroHud" type="PanelContainer" parent="HUDLayer/HUD"]
+layout_mode = 1
+script = ExtResource("4_hero_hud")
+
+[node name="CurrencyHud" type="HBoxContainer" parent="HUDLayer/HUD"]
+layout_mode = 1
+script = ExtResource("5_currency_hud")
+
+[node name="ChatBox" type="PanelContainer" parent="HUDLayer/HUD"]
+layout_mode = 1
+script = ExtResource("6_chat_box")
+
+[node name="BottomBar" type="HBoxContainer" parent="HUDLayer/HUD"]
+layout_mode = 1
+script = ExtResource("7_bottom_bar")
+
+[node name="Toast" type="PanelContainer" parent="HUDLayer/HUD"]
+layout_mode = 1
+script = ExtResource("3_toast")
+
+[node name="WindowLayer" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="CharacterPanel" type="Control" parent="WindowLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("8_character_panel")
