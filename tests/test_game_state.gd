@@ -104,3 +104,49 @@ func test_unfinished_battle_changes_nothing() -> void:
 	var battle := Battle.new(GameState.player.hero, GameState.enemies[0], FixedDice.new())
 	assert_eq(GameState.apply_battle_result(battle), 0)
 	assert_eq(GameState.player.gold, 1250)
+
+
+func test_tests_never_use_real_save() -> void:
+	# Rodando pelo executor de testes, o padrão é só leitura.
+	assert_true(GameState._default_repository() is LocalHeroRepository)
+	assert_false(GameState._default_repository() is SaveGameRepository)
+
+
+func test_victory_is_saved() -> void:
+	var recorder := RecordingHeroRepository.new()
+	use_repository(recorder)
+	GameState.apply_battle_result(_finished_battle(0))
+	assert_eq(recorder.saved.size(), 1)
+	assert_eq(recorder.saved[0]["hero"]["level"], 2)
+	assert_eq(recorder.saved[0]["currencies"]["gold"], 1265)
+
+
+func test_defeat_and_flee_are_saved_too() -> void:
+	var recorder := RecordingHeroRepository.new()
+	use_repository(recorder)
+	GameState.apply_battle_result(_finished_battle(1))
+	GameState.apply_battle_result(_finished_battle(0, Battle.Action.FLEE))
+	assert_eq(recorder.saved.size(), 2)
+
+
+func test_save_failure_emits_signal_and_keeps_player() -> void:
+	var recorder := RecordingHeroRepository.new()
+	recorder.save_error = "disco cheio"
+	use_repository(recorder)
+	var errors: Array = []
+	var on_failed := func(error: String) -> void: errors.append(error)
+	GameState.save_failed.connect(on_failed)
+	GameState.apply_battle_result(_finished_battle(0))
+	GameState.save_failed.disconnect(on_failed)
+	assert_eq(errors, ["disco cheio"])
+	assert_eq(GameState.player.hero.level, 2)
+
+
+func test_load_warning_is_kept() -> void:
+	var recorder := RecordingHeroRepository.new()
+	recorder.warning = "save danificado"
+	use_repository(recorder)
+	assert_eq(GameState.load_warning, "save danificado")
+	assert_true(GameState.has_player())
+	use_repository(FixedHeroRepository.aldric())
+	assert_eq(GameState.load_warning, "")

@@ -61,3 +61,19 @@ func test_long_name_does_not_stretch_hud() -> void:
 
 func test_chat_box_does_not_block_clicks() -> void:
 	assert_eq(main.chat_box.mouse_filter, Control.MOUSE_FILTER_IGNORE)
+
+
+func test_save_failure_shows_toast() -> void:
+	GameState.save_failed.emit("disco cheio")
+	assert_true(main.toast.visible)
+	assert_eq(main.toast.label.text, "Não foi possível salvar o progresso")
+
+
+func test_corrupted_save_warning_shows_toast_on_start() -> void:
+	var recorder := RecordingHeroRepository.new()
+	recorder.warning = "save danificado"
+	use_repository(recorder)
+	var fresh: Node = add_to_tree(load("res://ui/main.tscn").instantiate())
+	await tree.process_frame
+	assert_eq(fresh.toast.label.text, "Save danificado; um novo jogo foi iniciado (cópia guardada)")
+	assert_true(fresh.toast.visible)

@@ -26,6 +26,10 @@ func _ready() -> void:
 	bottom_bar.unavailable_pressed.connect(_show_coming_soon)
 	training_panel.fight_pressed.connect(_on_fight_pressed)
 	battle_screen.finished.connect(_on_battle_finished)
+	GameState.save_failed.connect(_on_save_failed)
+	# O GameState carrega antes desta cena existir: o aviso fica guardado nele.
+	if GameState.load_warning != "":
+		toast.show_message(Texts.SAVE_CORRUPTED)
 
 
 func _on_building_clicked(building_id: String, display_name: String) -> void:
@@ -45,6 +49,10 @@ func _on_fight_pressed(enemy: Enemy) -> void:
 func _on_battle_finished(outcome: Battle.Outcome) -> void:
 	if outcome == Battle.Outcome.FLED:
 		toast.show_message(Texts.FLED)
+
+
+func _on_save_failed(_error: String) -> void:
+	toast.show_message(Texts.SAVE_FAILED)
 
 
 func _show_coming_soon(display_name: String) -> void:

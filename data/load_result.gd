@@ -4,6 +4,8 @@ extends RefCounted
 
 var player: Player
 var error: String = ""
+## Carregou, mas há algo a avisar (ex.: save danificado trocado por um jogo novo).
+var warning: String = ""
 
 
 static func success(p_player: Player) -> LoadResult:

@@ -19,6 +19,8 @@ const VICTORY := "Vitória!"
 const DEFEAT := "Derrota"
 const DEFEAT_TEXT := "Você foi derrotado. Treine e tente de novo."
 const BACK_TO_CITY := "Voltar à cidade"
+const SAVE_FAILED := "Não foi possível salvar o progresso"
+const SAVE_CORRUPTED := "Save danificado; um novo jogo foi iniciado (cópia guardada)"
 
 const BATTLE_ACTIONS := {
 	"attack": "Atacar",

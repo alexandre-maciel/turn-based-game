@@ -1,6 +1,6 @@
 class_name LocalHeroRepository
 extends HeroRepository
-## Carrega o jogador de um JSON local e valida cada campo.
+## Carrega o jogador de um JSON local e valida cada campo. Só leitura.
 
 const DEFAULT_PATH := "res://data/sample_hero.json"
 
@@ -16,14 +16,20 @@ func load_player() -> LoadResult:
 	var root := fields.read_object(path)
 	if fields.error != "":
 		return LoadResult.failure(fields.error)
+	return parse_player(root, path)
+
+
+## Valida o objeto raiz já lido. `source` só aparece nas mensagens de erro.
+static func parse_player(root: Dictionary, source: String) -> LoadResult:
+	var fields := JsonFields.new()
 	var player := _parse_player(root, fields)
 	if player == null:
-		return LoadResult.failure("%s: %s" % [path, fields.error])
+		return LoadResult.failure("%s: %s" % [source, fields.error])
 	return LoadResult.success(player)
 
 
 ## Lê o jogador; em caso de problema, preenche fields.error e devolve null.
-func _parse_player(root: Dictionary, fields: JsonFields) -> Player:
+static func _parse_player(root: Dictionary, fields: JsonFields) -> Player:
 	var hero_data := fields.dict(root, "hero", "")
 	var attribute_data := fields.dict(hero_data, "attributes", "hero.")
 	var currency_data := fields.dict(root, "currencies", "")

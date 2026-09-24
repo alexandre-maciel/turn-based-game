@@ -1,13 +1,17 @@
 extends Node
 ## Autoload "GameState": dono do Player atual e da lista de inimigos. A UI só
-## lê daqui e escuta os sinais; mudanças no Player passam pelos métodos daqui.
+## lê daqui e escuta os sinais; mudanças no Player passam pelos métodos daqui,
+## e todo método que altera o Player termina com _save().
 
 signal player_changed(player: Player)
 signal load_failed(error: String)
+signal save_failed(error: String)
 
-var repository: HeroRepository = LocalHeroRepository.new()
+var repository: HeroRepository = _default_repository()
 var player: Player = null
 var load_error := ""
+## Aviso do último carregamento (ex.: save danificado trocado por um jogo novo).
+var load_warning := ""
 var enemy_repository: EnemyRepository = LocalEnemyRepository.new()
 var enemies: Array[Enemy] = []
 var enemies_error := ""
@@ -18,8 +22,20 @@ func _ready() -> void:
 	reload_enemies()
 
 
+## Jogo normal: o save do jogador. Rodando por --script (testes, ferramentas),
+## o SceneTree tem script próprio: usa o herói de exemplo, só leitura, para
+## nunca ler nem gravar o save de verdade.
+static func _default_repository() -> HeroRepository:
+	if Engine.get_main_loop().get_script() != null:
+		return LocalHeroRepository.new()
+	return SaveGameRepository.new()
+
+
 func reload() -> void:
 	var result := repository.load_player()
+	load_warning = result.warning
+	if load_warning != "":
+		push_warning("GameState: " + load_warning)
 	if result.is_ok():
 		player = result.player
 		load_error = ""
@@ -56,4 +72,12 @@ func apply_battle_result(battle: Battle) -> int:
 		levels_gained = Progression.apply_xp(player.hero, battle.enemy_data.xp_reward)
 	player.hero.current_hp = StatFormulas.max_hp(player.hero)
 	player_changed.emit(player)
+	_save()
 	return levels_gained
+
+
+func _save() -> void:
+	var error := repository.save_player(player)
+	if error != "":
+		push_error("GameState: " + error)
+		save_failed.emit(error)
