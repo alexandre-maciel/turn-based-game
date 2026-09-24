@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://ui/character_panel/character_panel.gd" id="8_character_panel"]
 [ext_resource type="Script" path="res://ui/training/training_panel.gd" id="9_training_panel"]
 [ext_resource type="Script" path="res://ui/battle/battle_screen.gd" id="10_battle_screen"]
+[ext_resource type="Script" path="res://ui/tower/tower_panel.gd" id="11_tower_panel"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -77,6 +78,16 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("9_training_panel")
+
+[node name="TowerPanel" type="Control" parent="WindowLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("11_tower_panel")
 
 [node name="BattleLayer" type="CanvasLayer" parent="."]
 layer = 3

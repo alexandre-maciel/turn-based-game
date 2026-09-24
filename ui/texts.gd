@@ -19,6 +19,10 @@ const VICTORY := "Vitória!"
 const DEFEAT := "Derrota"
 const DEFEAT_TEXT := "Você foi derrotado. Treine e tente de novo."
 const BACK_TO_CITY := "Voltar à cidade"
+const TOWER_HP := "HP da escalada"
+const BOSS_TAG := "CHEFE"
+const CLIMB := "Subir"
+const RESTART_CLIMB := "Recomeçar"
 const SAVE_FAILED := "Não foi possível salvar o progresso"
 const SAVE_CORRUPTED := "Save danificado; um novo jogo foi iniciado (cópia guardada)"
 
@@ -161,3 +165,11 @@ static func battle_log(event: BattleEvent, skill_id: String) -> String:
 		BattleEvent.Kind.DEFEATED:
 			return "%s foi derrotado!" % actor
 	return ""
+
+
+static func tower_floor(floor_number: int) -> String:
+	return "Andar %d" % floor_number
+
+
+static func tower_best(best_floor: int) -> String:
+	return "Recorde: nenhum" if best_floor == 0 else "Recorde: andar %d" % best_floor

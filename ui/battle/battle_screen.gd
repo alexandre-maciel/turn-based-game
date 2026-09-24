@@ -2,9 +2,10 @@ class_name BattleScreen
 extends Control
 ## Tela de combate (tela inteira, bloqueia a cidade). A cada ação, o Battle
 ## resolve a rodada e a tela exibe os eventos um por um. No fim, mostra o
-## resultado; "Voltar à cidade" aplica o resultado no GameState.
+## resultado; "Voltar à cidade" (ou a fuga) emite `finished` e o main aplica
+## o resultado no GameState conforme a origem (Treino ou Torre).
 
-signal finished(outcome: Battle.Outcome)
+signal finished(battle: Battle)
 
 const BACKGROUND_PATH := "res://assets/battle/background.png"
 const SKY := Color("#6d8db0")
@@ -49,9 +50,10 @@ func _ready() -> void:
 	_build()
 
 
-func start(enemy: Enemy) -> void:
+## `start_hp`: HP inicial do herói (a Torre passa o HP da escalada); -1 usa o do herói.
+func start(enemy: Enemy, start_hp: int = -1) -> void:
 	var hero: Hero = GameState.player.hero
-	battle = Battle.new(hero, enemy, dice if dice != null else Dice.new())
+	battle = Battle.new(hero, enemy, dice if dice != null else Dice.new(), start_hp)
 	hero_view.show_combatant(battle.hero, "res://assets/portraits/%s_full.png" % hero.hero_class)
 	enemy_view.show_combatant(battle.enemy, "res://assets/enemies/%s.png" % enemy.id)
 	_log_lines.clear()
@@ -123,13 +125,11 @@ func _show_result() -> void:
 	_set_result_visible(true)
 
 
-## Aplica o resultado, fecha a tela e avisa o main.
+## Fecha a tela e avisa o main, que aplica o resultado.
 func _leave() -> void:
-	var outcome := battle.outcome
-	GameState.apply_battle_result(battle)
 	visible = false
 	_set_result_visible(false)
-	finished.emit(outcome)
+	finished.emit(battle)
 
 
 func _set_result_visible(value: bool) -> void:

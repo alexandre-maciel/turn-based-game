@@ -22,7 +22,8 @@ Estilo de referência: fantasia medieval ilustrada, paleta quente de marrom e do
 | `ui/panel_frame.png` | 96×96, 9-slice com bordas de 24 px | Moldura das janelas |
 | `ui/slot_empty.png` | 64×64 | Slot de equipamento vazio |
 | `battle/background.png` | 1280×720 | Fundo do combate (campo de treino); esticado para a tela toda |
-| `enemies/giant_rat.png`, `wolf.png`, `ogre.png` | até 220×250, transparente | Inimigos virados para a esquerda (nome = `id` em `data/enemies.json`) |
+| `enemies/giant_rat.png`, `wolf.png`, `ogre.png` | até 220×250, transparente | Inimigos do Treino virados para a esquerda (nome = `id` em `data/enemies.json`) |
+| `enemies/tower_skeleton.png`, `tower_goblin.png`, `tower_spider.png`, `tower_cultist.png`, `tower_guardian.png` | até 220×250, transparente | Inimigos da Torre (o Guardião é o chefe a cada 5 andares) |
 
 Posição de cada construção no palco de 1280×720 (canto superior esquerdo x, y):
 castelo (512, 173), torre (138, 206), ferreiro (320, 360), mercado (819, 317),

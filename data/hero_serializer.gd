@@ -4,7 +4,8 @@ extends RefCounted
 
 ## Versão do formato. Ao mudar o formato, suba este número e trate a migração
 ## no SaveGameRepository.
-const VERSION := 1
+## Versão 2: + "tower". Saves da versão 1 (sem "tower") continuam válidos.
+const VERSION := 2
 
 
 static func to_dict(player: Player) -> Dictionary:
@@ -26,4 +27,9 @@ static func to_dict(player: Player) -> Dictionary:
 			},
 		},
 		"currencies": {"gold": player.gold, "gems": player.gems},
+		"tower": {
+			"floor": player.tower.floor_number,
+			"hp": player.tower.hp,
+			"best_floor": player.tower.best_floor,
+		},
 	}

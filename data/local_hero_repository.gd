@@ -51,7 +51,24 @@ static func _parse_player(root: Dictionary, fields: JsonFields) -> Player:
 		attributes)
 	var gold := fields.integer(currency_data, "gold", "currencies.", 0)
 	var gems := fields.integer(currency_data, "gems", "currencies.", 0)
+	var tower := _parse_tower(root, fields)
 	if fields.error != "":
 		return null
-	hero.current_hp = clampi(hero.current_hp, 0, StatFormulas.max_hp(hero))
-	return Player.new(hero, gold, gems)
+	var max_hp := StatFormulas.max_hp(hero)
+	hero.current_hp = clampi(hero.current_hp, 0, max_hp)
+	if tower == null:
+		return Player.new(hero, gold, gems)
+	tower.hp = clampi(tower.hp, 1, max_hp)
+	return Player.new(hero, gold, gems, tower)
+
+
+## "tower" é opcional (o herói de exemplo e os saves da versão 1 não têm).
+static func _parse_tower(root: Dictionary, fields: JsonFields) -> TowerProgress:
+	if fields.error != "" or not root.has("tower"):
+		return null
+	var data := fields.dict(root, "tower", "")
+	var tower := TowerProgress.new(
+		fields.integer(data, "floor", "tower.", 1),
+		fields.integer(data, "hp", "tower.", 0),
+		fields.integer(data, "best_floor", "tower.", 0))
+	return tower if fields.error == "" else null

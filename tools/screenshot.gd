@@ -3,7 +3,7 @@ extends SceneTree
 ## Uso (precisa de janela; NÃO use --headless):
 ##   Godot_v4.7.2-stable_win64.exe/Godot_v4.7.2-stable_win64_console.exe --path . --script res://tools/screenshot.gd
 ## Saída: screenshots/city.png, character_panel.png, training_panel.png,
-## battle.png e battle_result.png
+## battle.png, battle_result.png e tower_panel.png
 
 const OUTPUT_DIR := "res://screenshots"
 
@@ -37,6 +37,11 @@ func _initialize() -> void:
 	for _i in 60:
 		await process_frame
 	_save("battle_result.png")
+	battle_screen.back_button.pressed.emit()
+	main.city.buildings["tower"].clicked.emit()
+	for _i in 5:
+		await process_frame
+	_save("tower_panel.png")
 	quit(0)
 
 

@@ -134,3 +134,9 @@ func test_hero_with_zero_hp_starts_with_one() -> void:
 	var hero := _aldric()
 	hero.current_hp = 0
 	assert_eq(Battle.new(hero, _enemy(), FixedDice.new()).hero.hp, 1)
+
+
+func test_start_hp_overrides_hero_hp() -> void:
+	assert_eq(Battle.new(_aldric(), _enemy(), FixedDice.new(), 100).hero.hp, 100)
+	assert_eq(Battle.new(_aldric(), _enemy(), FixedDice.new(), 9999).hero.hp, 240)
+	assert_eq(Battle.new(_aldric(), _enemy(), FixedDice.new(), 0).hero.hp, 1)

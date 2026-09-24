@@ -17,8 +17,11 @@ var skill_cooldown := 0  ## Rodadas que faltam para a habilidade voltar.
 var _dice: Dice
 
 
-func _init(p_hero: Hero, p_enemy: Enemy, p_dice: Dice = Dice.new()) -> void:
+## `start_hp`: HP inicial do herói (a Torre usa o HP da escalada); -1 usa o do herói.
+func _init(p_hero: Hero, p_enemy: Enemy, p_dice: Dice = Dice.new(), start_hp: int = -1) -> void:
 	hero = Combatant.from_hero(p_hero)
+	if start_hp >= 0:
+		hero.hp = clampi(start_hp, 1, hero.max_hp)
 	enemy = Combatant.from_enemy(p_enemy)
 	enemy_data = p_enemy
 	skill = StatFormulas.skill_for(p_hero.hero_class)

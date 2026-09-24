@@ -66,14 +66,52 @@ func apply_battle_result(battle: Battle) -> int:
 	if player == null or not battle.is_over():
 		push_error("GameState: apply_battle_result sem herói ou com combate em andamento")
 		return 0
-	var levels_gained := 0
-	if battle.outcome == Battle.Outcome.VICTORY:
-		player.gold += battle.enemy_data.gold_reward
-		levels_gained = Progression.apply_xp(player.hero, battle.enemy_data.xp_reward)
+	var levels_gained := _give_rewards(battle)
 	player.hero.current_hp = StatFormulas.max_hp(player.hero)
 	player_changed.emit(player)
 	_save()
 	return levels_gained
+
+
+## Fim de um combate da Torre. Vitória: recompensas, próximo andar e 20% de HP
+## de volta. Derrota: a escalada recomeça (o recorde fica). Fuga: mantém o
+## andar com o HP que sobrou. Devolve quantos níveis o herói subiu.
+func apply_tower_result(battle: Battle) -> int:
+	if player == null or not battle.is_over():
+		push_error("GameState: apply_tower_result sem herói ou com combate em andamento")
+		return 0
+	var levels_gained := _give_rewards(battle)
+	var tower := player.tower
+	var max_hp := StatFormulas.max_hp(player.hero)
+	match battle.outcome:
+		Battle.Outcome.VICTORY:
+			tower.best_floor = maxi(tower.best_floor, tower.floor_number)
+			tower.floor_number += 1
+			tower.hp = mini(max_hp, battle.hero.hp + Tower.regen(max_hp))
+		Battle.Outcome.DEFEAT:
+			player.tower = TowerProgress.fresh(player.hero, tower.best_floor)
+		Battle.Outcome.FLED:
+			tower.hp = clampi(battle.hero.hp, 1, max_hp)
+	player_changed.emit(player)
+	_save()
+	return levels_gained
+
+
+## Abandona a escalada: andar 1 com HP cheio; o recorde fica.
+func reset_tower() -> void:
+	if player == null:
+		return
+	player.tower = TowerProgress.fresh(player.hero, player.tower.best_floor)
+	player_changed.emit(player)
+	_save()
+
+
+## XP e ouro da vitória (nada na derrota e na fuga). Devolve os níveis ganhos.
+func _give_rewards(battle: Battle) -> int:
+	if battle.outcome != Battle.Outcome.VICTORY:
+		return 0
+	player.gold += battle.enemy_data.gold_reward
+	return Progression.apply_xp(player.hero, battle.enemy_data.xp_reward)
 
 
 func _save() -> void:

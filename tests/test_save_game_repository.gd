@@ -95,3 +95,37 @@ func test_unwritable_path_returns_error() -> void:
 	FileHelper.write(DIR + "/blocker", "x")
 	var error := SaveGameRepository.new(DIR + "/blocker/save.json").save_player(_leveled_player())
 	assert_true(error.begins_with("Não foi possível gravar"), error)
+
+
+func test_tower_progress_is_saved() -> void:
+	var player := _leveled_player()
+	player.tower = TowerProgress.new(4, 131, 3)
+	_repository().save_player(player)
+	var tower := _repository().load_player().player.tower
+	assert_eq([tower.floor_number, tower.hp, tower.best_floor], [4, 131, 3])
+
+
+func test_version_1_save_without_tower_starts_fresh_climb() -> void:
+	var data := HeroSerializer.to_dict(_leveled_player())
+	data["version"] = 1
+	data.erase("tower")
+	FileHelper.write(SAVE, JSON.stringify(data))
+	var result := _repository().load_player()
+	assert_eq(result.warning, "")
+	var tower := result.player.tower
+	assert_eq([tower.floor_number, tower.hp, tower.best_floor], [1, 260, 0])
+
+
+func test_tower_hp_is_clamped() -> void:
+	var data := HeroSerializer.to_dict(_leveled_player())
+	data["tower"]["hp"] = 9999
+	FileHelper.write(SAVE, JSON.stringify(data))
+	assert_eq(_repository().load_player().player.tower.hp, 260)
+
+
+func test_invalid_tower_counts_as_corrupted() -> void:
+	var data := HeroSerializer.to_dict(_leveled_player())
+	data["tower"]["floor"] = 0
+	FileHelper.write(SAVE, JSON.stringify(data))
+	var result := _repository().load_player()
+	assert_true(result.warning.contains("tower.floor"), result.warning)

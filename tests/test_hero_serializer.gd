@@ -10,18 +10,19 @@ func after_each() -> void:
 
 func _player() -> Player:
 	var hero := Hero.new("hero-001", "Aldric", "mage", 2, 5, 260, Attributes.new(5, 8, 14, 12))
-	return Player.new(hero, 1265, 20)
+	return Player.new(hero, 1265, 20, TowerProgress.new(4, 131, 3))
 
 
 func test_dict_has_expected_format() -> void:
 	assert_eq(HeroSerializer.to_dict(_player()), {
-		"version": 1,
+		"version": 2,
 		"hero": {
 			"id": "hero-001", "name": "Aldric", "class": "mage",
 			"level": 2, "xp": 5, "current_hp": 260,
 			"attributes": {"strength": 5, "agility": 8, "intelligence": 14, "vitality": 12},
 		},
 		"currencies": {"gold": 1265, "gems": 20},
+		"tower": {"floor": 4, "hp": 131, "best_floor": 3},
 	})
 
 

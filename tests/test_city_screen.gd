@@ -21,10 +21,10 @@ func test_six_buildings_in_spec_positions() -> void:
 
 
 func test_click_building_shows_coming_soon_toast() -> void:
-	var tower: Building = main.city.buildings["tower"]
-	tower._gui_input(left_click())
+	var castle: Building = main.city.buildings["castle"]
+	castle._gui_input(left_click())
 	assert_true(main.toast.visible)
-	assert_eq(main.toast.label.text, "Torre — em breve")
+	assert_eq(main.toast.label.text, "Castelo — em breve")
 
 
 func test_right_click_does_nothing() -> void:
@@ -41,7 +41,7 @@ func test_toast_hides_when_timer_ends() -> void:
 
 
 func test_clicking_again_shows_latest_text_and_restarts_timer() -> void:
-	main.city.buildings["tower"]._gui_input(left_click())
+	main.city.buildings["castle"]._gui_input(left_click())
 	main.city.buildings["market"]._gui_input(left_click())
 	assert_eq(main.toast.label.text, "Mercado — em breve")
 	assert_true(main.toast.hide_timer.time_left > Toast.DURATION - 0.2)
