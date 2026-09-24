@@ -1,5 +1,5 @@
 class_name CharacterPanel
-extends Control
+extends GameWindow
 ## Janela "Personagem" (layout A da spec): herói e 8 slots à esquerda;
 ## HP/XP, atributos e combate à direita. Só exibe dados do GameState.
 ## Fecha no X, com Esc ou com clique no fundo escurecido.
@@ -10,7 +10,6 @@ const FIGURE_SIZE := Vector2(140, 230)
 const FIGURE_CENTER := Vector2(0.5, 0.52)
 const FIGURE_FILL := Color("#7a5230")
 const SLOT_TEXT := Color("#b99c5e")
-const INNER_BORDER := Color("#6b5020")
 const SLOT_ART_PATH := "res://assets/ui/slot_empty.png"
 ## Centro de cada slot, em fração da área do retrato.
 const SLOT_ANCHORS := {
@@ -24,9 +23,6 @@ const SLOT_ANCHORS := {
 	"shield": Vector2(0.64, 0.90),
 }
 
-var dim: ColorRect
-var window: PanelContainer
-var close_button: Button
 var name_label: Label
 var class_level_label: Label
 var hp_label: Label
@@ -40,11 +36,17 @@ var _figure_placeholder: Panel
 
 
 func _ready() -> void:
-	visible = false
-	mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_build()
+	super()
 	GameState.player_changed.connect(_on_player_changed)
 	GameState.load_failed.connect(_on_load_failed)
+
+
+func _window_title() -> String:
+	return Texts.PANEL_TITLE
+
+
+func _window_size() -> Vector2:
+	return WINDOW_SIZE
 
 
 func open() -> void:
@@ -52,25 +54,6 @@ func open() -> void:
 		return
 	_render()
 	visible = true
-
-
-func close() -> void:
-	visible = false
-
-
-func is_open() -> bool:
-	return visible
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if visible and event.is_action_pressed("ui_cancel"):
-		close()
-		get_viewport().set_input_as_handled()
-
-
-func _on_dim_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		close()
 
 
 func _on_player_changed(_player: Player) -> void:
@@ -108,58 +91,20 @@ func _render() -> void:
 	_figure_placeholder.visible = figure == null
 
 
-func _build() -> void:
-	dim = ColorRect.new()
-	dim.color = Color(0, 0, 0, 0.5)
-	dim.set_anchors_preset(Control.PRESET_FULL_RECT)
-	dim.mouse_filter = Control.MOUSE_FILTER_STOP
-	dim.gui_input.connect(_on_dim_gui_input)
-	add_child(dim)
-	window = PanelContainer.new()
-	window.set_anchors_preset(Control.PRESET_CENTER)
-	window.offset_left = -WINDOW_SIZE.x / 2.0
-	window.offset_right = WINDOW_SIZE.x / 2.0
-	window.offset_top = -WINDOW_SIZE.y / 2.0
-	window.offset_bottom = WINDOW_SIZE.y / 2.0
-	add_child(window)
-	var layout := VBoxContainer.new()
-	layout.add_theme_constant_override("separation", 8)
-	window.add_child(layout)
-	layout.add_child(_build_title_bar())
-	layout.add_child(HSeparator.new())
-	var body := HBoxContainer.new()
-	body.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	body.add_theme_constant_override("separation", 12)
-	layout.add_child(body)
-	body.add_child(_build_paperdoll())
-	body.add_child(_build_stats())
-
-
-func _build_title_bar() -> Control:
-	var bar := HBoxContainer.new()
-	var spacer := Control.new()
-	spacer.custom_minimum_size = Vector2(36, 0)
-	bar.add_child(spacer)
-	var title := Label.new()
-	title.text = Texts.PANEL_TITLE
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title.add_theme_font_size_override("font_size", 22)
-	title.add_theme_color_override("font_color", GameTheme.GOLD_LIGHT)
-	bar.add_child(title)
-	close_button = Button.new()
-	close_button.text = "X"
-	close_button.custom_minimum_size = Vector2(36, 36)
-	close_button.pressed.connect(close)
-	bar.add_child(close_button)
-	return bar
+func _build_content(body: VBoxContainer) -> void:
+	var columns := HBoxContainer.new()
+	columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	columns.add_theme_constant_override("separation", 12)
+	body.add_child(columns)
+	columns.add_child(_build_paperdoll())
+	columns.add_child(_build_stats())
 
 
 func _build_paperdoll() -> Control:
 	var frame := PanelContainer.new()
 	frame.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	frame.size_flags_stretch_ratio = 1.1
-	frame.add_theme_stylebox_override("panel", _inner_box())
+	frame.add_theme_stylebox_override("panel", GameTheme.inner_box())
 	var area := Control.new()
 	frame.add_child(area)
 	var header := VBoxContainer.new()
@@ -211,7 +156,7 @@ func _build_stats() -> Control:
 ## Bloco com fundo escuro (e título, se houver). Devolve a coluna interna.
 func _section(parent: Control, title: String) -> VBoxContainer:
 	var box := PanelContainer.new()
-	box.add_theme_stylebox_override("panel", _inner_box())
+	box.add_theme_stylebox_override("panel", GameTheme.inner_box())
 	parent.add_child(box)
 	var inner := VBoxContainer.new()
 	inner.add_theme_constant_override("separation", 2)
@@ -278,7 +223,3 @@ func _centered_label(font_size: int) -> Label:
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.add_theme_font_size_override("font_size", font_size)
 	return label
-
-
-func _inner_box() -> StyleBoxFlat:
-	return GameTheme.box(Color(0, 0, 0, 0.25), INNER_BORDER, 1, 4)

@@ -1,0 +1,13 @@
+{
+  "enemies": [
+    { "id": "giant_rat", "name": "Rato Gigante", "level": 1,
+      "max_hp": 80, "attack": 20, "defense": 6, "crit_chance": 2, "speed": 95,
+      "rewards": { "xp": 20, "gold": 15 } },
+    { "id": "wolf", "name": "Lobo", "level": 2,
+      "max_hp": 140, "attack": 30, "defense": 10, "crit_chance": 5, "speed": 112,
+      "rewards": { "xp": 45, "gold": 30 } },
+    { "id": "ogre", "name": "Ogro", "level": 4,
+      "max_hp": 320, "attack": 45, "defense": 20, "crit_chance": 5, "speed": 90,
+      "rewards": { "xp": 120, "gold": 80 } }
+  ]
+}

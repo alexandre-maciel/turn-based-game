@@ -6,7 +6,6 @@ extends RefCounted
 var tree: SceneTree
 var failures: Array[String] = []
 var _nodes: Array[Node] = []
-var _repository_swapped := false
 
 
 func before_each() -> void:
@@ -17,18 +16,18 @@ func after_each() -> void:
 	pass
 
 
-## Libera os nós de add_to_tree() e restaura a fonte de dados real do GameState.
-## Chamado pelo executor.
+## Libera os nós de add_to_tree() e recarrega o GameState das fontes reais
+## (os testes podem trocar a fonte ou alterar o Player). Chamado pelo executor.
 func cleanup() -> void:
 	for node in _nodes:
 		if is_instance_valid(node):
 			node.free()
 	_nodes.clear()
-	if _repository_swapped:
-		_repository_swapped = false
-		var game_state = _game_state()
-		game_state.repository = LocalHeroRepository.new()
-		game_state.reload()
+	var game_state = _game_state()
+	game_state.repository = LocalHeroRepository.new()
+	game_state.enemy_repository = LocalEnemyRepository.new()
+	game_state.reload()
+	game_state.reload_enemies()
 
 
 func assert_eq(actual: Variant, expected: Variant, message: String = "") -> void:
@@ -58,10 +57,16 @@ func add_to_tree(node: Node) -> Node:
 
 ## Troca a fonte de dados do GameState durante o teste e recarrega.
 func use_repository(repository: HeroRepository) -> void:
-	_repository_swapped = true
 	var game_state = _game_state()
 	game_state.repository = repository
 	game_state.reload()
+
+
+## Troca a fonte dos inimigos do GameState durante o teste e recarrega.
+func use_enemy_repository(repository: EnemyRepository) -> void:
+	var game_state = _game_state()
+	game_state.enemy_repository = repository
+	game_state.reload_enemies()
 
 
 ## O autoload pela árvore: este script é compilado junto com o executor,

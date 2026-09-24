@@ -1,0 +1,10 @@
+{
+  "enemies": [
+    { "id": "giant_rat", "name": "Rato Gigante", "level": 1,
+      "max_hp": 80, "attack": 20, "defense": 6, "crit_chance": 2, "speed": 95,
+      "rewards": { "xp": 20, "gold": 15 } },
+    { "id": "wolf", "name": "Lobo", "level": 0,
+      "max_hp": 140, "attack": 30, "defense": 10, "crit_chance": 5, "speed": 112,
+      "rewards": { "xp": 45, "gold": 30 } }
+  ]
+}

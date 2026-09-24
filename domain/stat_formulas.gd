@@ -9,6 +9,15 @@ const CLASSES := {
 }
 
 
+## Habilidade de combate de cada classe. `cooldown`: rodadas até poder usar de novo.
+const SKILLS := {
+	"mage": {"id": "fireball", "multiplier": 1.6, "cooldown": 3},
+}
+
+const CRIT_MULTIPLIER := 1.5
+const DEFEND_MULTIPLIER := 0.5
+
+
 static func is_valid_class(hero_class: String) -> bool:
 	return CLASSES.has(hero_class)
 
@@ -40,3 +49,20 @@ static func speed(hero: Hero) -> int:
 
 static func xp_to_next_level(level: int) -> int:
 	return roundi(100.0 * pow(level, 1.5))
+
+
+static func skill_for(hero_class: String) -> Dictionary:
+	return SKILLS[hero_class]
+
+
+## Dano de um golpe. Mínimo 1; arredonda para baixo.
+## base = ataque − defesa÷2; depois multiplicador da ação, variação, crítico e defesa.
+static func damage(attack: int, defense: int, multiplier: float, variance: float,
+		critical: bool, defending: bool) -> int:
+	var value := float(maxi(1, attack - floori(defense / 2.0))) * multiplier * variance
+	if critical:
+		value *= CRIT_MULTIPLIER
+	if defending:
+		value *= DEFEND_MULTIPLIER
+	# A folga evita que 27,0 vire 26,999... e perca 1 ponto no floor.
+	return maxi(1, floori(value + 0.0001))

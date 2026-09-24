@@ -10,6 +10,24 @@ const SECTION_COMBAT := "Combate"
 const HP := "HP"
 const XP := "XP"
 
+const TRAINING_TITLE := "Campo de Treino"
+const FIGHT := "Lutar"
+const ENEMIES_LOAD_ERROR := "Erro ao carregar inimigos"
+const FLED := "Você fugiu do combate"
+const CRITICAL := "CRÍTICO!"
+const VICTORY := "Vitória!"
+const DEFEAT := "Derrota"
+const DEFEAT_TEXT := "Você foi derrotado. Treine e tente de novo."
+const BACK_TO_CITY := "Voltar à cidade"
+
+const BATTLE_ACTIONS := {
+	"attack": "Atacar",
+	"defend": "Defender",
+	"flee": "Fugir",
+}
+
+const SKILLS := {"fireball": "Bola de Fogo"}
+
 const CLASS_LABELS := {"mage": "Mago"}
 
 const BUILDINGS := {
@@ -91,3 +109,53 @@ static func thousands(value: int) -> String:
 		grouped = "." + digits.right(3) + grouped
 		digits = digits.left(digits.length() - 3)
 	return ("-" if value < 0 else "") + digits + grouped
+
+
+## "+20 XP · +15 ouro"
+static func rewards(xp: int, gold: int) -> String:
+	return "%s · %s" % [xp_gain(xp), gold_gain(gold)]
+
+
+static func xp_gain(xp: int) -> String:
+	return "+%s XP" % thousands(xp)
+
+
+static func gold_gain(gold: int) -> String:
+	return "+%s ouro" % thousands(gold)
+
+
+static func level_up(level: int) -> String:
+	return "Subiu para o nível %d!" % level
+
+
+static func battle_round(number: int) -> String:
+	return "Rodada %d" % number
+
+
+## "Bola de Fogo" ou, em recarga, "Bola de Fogo (2)".
+static func skill_button(skill_id: String, cooldown: int) -> String:
+	var skill_name: String = SKILLS.get(skill_id, skill_id)
+	return skill_name if cooldown == 0 else "%s (%d)" % [skill_name, cooldown]
+
+
+static func damage_popup(amount: int, critical: bool) -> String:
+	return ("%s\n-%d" % [CRITICAL, amount]) if critical else "-%d" % amount
+
+
+## Linha do registro do combate para um evento.
+static func battle_log(event: BattleEvent, skill_id: String) -> String:
+	var actor := event.actor.combatant_name
+	match event.kind:
+		BattleEvent.Kind.HIT:
+			var target := event.target.combatant_name
+			var line := "%s ataca %s: %d de dano." % [actor, target, event.damage]
+			if event.skill:
+				line = "%s usa %s em %s: %d de dano." % [actor, SKILLS.get(skill_id, skill_id), target, event.damage]
+			return ("Crítico! " + line) if event.critical else line
+		BattleEvent.Kind.DEFEND:
+			return "%s se defende." % actor
+		BattleEvent.Kind.FLEE:
+			return "%s foge do combate." % actor
+		BattleEvent.Kind.DEFEATED:
+			return "%s foi derrotado!" % actor
+	return ""

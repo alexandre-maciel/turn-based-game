@@ -8,6 +8,8 @@
 [ext_resource type="Script" path="res://ui/hud/chat_box.gd" id="6_chat_box"]
 [ext_resource type="Script" path="res://ui/bottom_bar/bottom_bar.gd" id="7_bottom_bar"]
 [ext_resource type="Script" path="res://ui/character_panel/character_panel.gd" id="8_character_panel"]
+[ext_resource type="Script" path="res://ui/training/training_panel.gd" id="9_training_panel"]
+[ext_resource type="Script" path="res://ui/battle/battle_screen.gd" id="10_battle_screen"]
 
 [node name="Main" type="Node"]
 script = ExtResource("1_main")
@@ -65,3 +67,25 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("8_character_panel")
+
+[node name="TrainingPanel" type="Control" parent="WindowLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("9_training_panel")
+
+[node name="BattleLayer" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="BattleScreen" type="Control" parent="BattleLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("10_battle_screen")

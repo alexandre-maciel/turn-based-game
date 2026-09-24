@@ -10,6 +10,7 @@ const GOLD := Color("#c9a24a")
 const GOLD_LIGHT := Color("#e8c56a")
 const TEXT := Color("#f3e2b3")
 const HP_RED := Color("#c0392b")
+const INNER_BORDER := Color("#6b5020")
 const PANEL_FRAME_PATH := "res://assets/ui/panel_frame.png"
 const FRAME_BORDER := 24
 
@@ -50,6 +51,11 @@ static func box(bg: Color, border: Color, border_width: int, radius: int) -> Sty
 	style.set_corner_radius_all(radius)
 	style.set_content_margin_all(6)
 	return style
+
+
+## Caixa escura de dentro das janelas (blocos, listas).
+static func inner_box() -> StyleBoxFlat:
+	return box(Color(0, 0, 0, 0.25), INNER_BORDER, 1, 4)
 
 
 static func make_bar(fill: Color, min_width: float) -> ProgressBar:
